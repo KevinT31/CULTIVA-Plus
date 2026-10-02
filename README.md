@@ -94,6 +94,10 @@ Field intelligence and application services are kept as separate layers, allowin
 
 Device credentials, environment configuration and implementation code remain private. This repository exposes only a portfolio-safe description of the platform.
 
+## More Documentation
+
+[Architecture notes](./docs/ARCHITECTURE.md)
+
 ---
 
 **Private source repository · Public smart-agriculture case study**
