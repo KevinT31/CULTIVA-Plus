@@ -1,58 +1,91 @@
+<div align="center">
+
 # CULTIVA+
 
-> **Public project showcase.** The implementation remains private while this repository documents the architecture and engineering scope.
+### Smart Agriculture · IoT · Edge Intelligence · Mobile
+
+**Public engineering showcase — source code remains private**
+
+[Architecture](./docs/ARCHITECTURE.md) · [Project status](./docs/STATUS.md)
+
+</div>
+
+---
 
 ## Overview
 
-**CULTIVA+** is a smart-agriculture platform combining **IoT sensing, edge intelligence, machine-learning-assisted irrigation decisions and mobile/cloud services**.
+**CULTIVA+** is a smart-agriculture project that combines field sensing, local/edge processing, irrigation recommendations and a mobile/backend application layer.
 
-The project is divided into two complementary layers:
+The private repository is split into two major areas:
 
-1. **Native / Edge** — field acquisition, local decisions, offline resilience and cloud publishing.
-2. **Application Platform** — backend services, persistence, cache/object storage and mobile access.
+1. **Native / Edge** — Python-based sensing, local persistence, decision logic and connectivity.
+2. **Application Platform** — NestJS backend plus Expo/React Native mobile client.
 
-## Edge Capabilities
+The edge module is explicitly described in the private project as **pre-MVP**, so this showcase focuses on architecture and implemented building blocks rather than presenting the system as production-ready.
 
-- Real or simulated 7-in-1 sensor acquisition
-- Irrigation recommendations using rules / ML
-- Local JSON and CSV persistence
-- Latest-state snapshots
-- Offline queue when connectivity is unavailable
-- HTTP ingestion
-- MQTT publishing
-- LAN-accessible local API
-- Dataset ETL
-- Local model training
-
-## Application Platform
-
-- Mobile application
-- Backend API
-- PostgreSQL persistence
-- Redis
-- S3-compatible object storage
-
-## Architecture
+## Edge / IoT Pipeline
 
 ```mermaid
 flowchart LR
-    Sensors[Field Sensors] --> Edge[Python Edge Runtime]
-    Edge --> Decision[Rules / ML Decision Layer]
+    Sensors[7-in-1 Sensors] --> Edge[Python Edge Runtime]
+    Edge --> Decision[Rules / ML]
+    Decision --> Snapshot[Latest Snapshot]
+    Decision --> Raw[JSONL / CSV]
+    Decision --> Offline[Offline Queue]
 
-    Decision --> Snapshot[Local Snapshot]
-    Decision --> Offline[Offline Cache]
+    Edge --> HTTP[HTTP Ingestion]
+    Edge --> MQTT[MQTT / IoT Path]
 
-    Edge --> HTTP[HTTP]
-    Edge --> MQTT[MQTT]
+    HTTP --> API[NestJS Backend]
+    MQTT --> Cloud[AWS IoT Integration Path]
 
-    HTTP --> API[Backend API]
-    MQTT --> Cloud[IoT / Cloud]
-
-    API --> DB[PostgreSQL]
-    API --> Redis[Redis]
-    API --> Storage[Object Storage]
-    API --> Mobile[Mobile App]
+    API --> DB[(PostgreSQL)]
+    API --> Redis[Redis / BullMQ]
+    API --> Storage[MinIO / S3]
+    API --> Mobile[Expo Mobile App]
 ```
+
+## Edge Capabilities Present in the Private Project
+
+- real or simulated 7-in-1 sensor reads
+- irrigation recommendations using rules / ML
+- JSONL and CSV persistence
+- latest-state snapshot
+- offline cache when connectivity is unavailable
+- HTTP publishing
+- MQTT / IoT Core integration path
+- local LAN snapshot API
+- dataset ETL
+- local model-training workflow
+
+## Application Platform
+
+The private application layer contains:
+
+### Backend
+
+- NestJS
+- Prisma
+- PostgreSQL
+- Redis / BullMQ
+- Socket.IO
+- JWT / Passport
+- S3-compatible storage integration
+- Swagger
+- health/metrics-related tooling
+- validation, rate limiting and Helmet
+
+### Mobile
+
+- Expo / React Native
+- navigation
+- Axios
+- SecureStore
+- notifications
+- location
+- Google sign-in integration path
+- Socket.IO client
+- Zod
 
 ## Technology
 
@@ -60,44 +93,37 @@ flowchart LR
 |---|---|
 | Edge | Python |
 | IoT | MQTT · AWS IoT integration path |
-| Intelligence | Rules · Machine Learning |
+| Intelligence | Rules · ML workflows |
 | Backend | NestJS · Prisma |
 | Database | PostgreSQL |
-| Cache | Redis |
-| Object Storage | MinIO / S3-compatible |
+| Queue/cache | Redis · BullMQ |
+| Realtime | Socket.IO |
+| Storage | MinIO · S3-compatible |
 | Mobile | Expo · React Native |
-| Data | JSONL · CSV · ETL workflows |
+| Data preparation | JSONL · CSV · ETL |
 
-## Engineering Highlights
+## Engineering Decisions
 
-### Offline Resilience
+**Offline operation matters.** The edge layer caches data locally instead of assuming reliable connectivity.
 
-The edge module can keep local data when connectivity is unavailable instead of assuming a permanent cloud connection.
+**Field intelligence is separated from the application backend.** Sensor acquisition and recommendations can evolve independently from the mobile/product layer.
 
-### Sensor-to-Decision Pipeline
+**Multiple transport options are supported.** HTTP and MQTT serve different connectivity scenarios.
 
-Sensor acquisition, data persistence and irrigation recommendations are organized as a single technical pipeline.
+**Data preparation is part of the system.** ETL and model-training utilities are kept alongside the edge workflow instead of being treated as unrelated notebooks.
 
-### Multiple Communication Modes
+## Current Status
 
-The architecture supports both HTTP and MQTT-based integration.
+The private native module is explicitly **pre-MVP**. Core edge building blocks and application-layer foundations exist, while hardware/cloud integration and product validation still require further work.
 
-### Data Preparation
+[See the explicit status matrix →](./docs/STATUS.md)
 
-The project includes ETL workflows that transform local/raw agricultural data into curated datasets used for training and decisions.
+## Why the Source Is Private
 
-### Edge + Application Separation
-
-Field intelligence and application services are kept as separate layers, allowing the system to continue useful local operation independently of the mobile/backend stack.
-
-## Repository Strategy
-
-Device credentials, environment configuration and implementation code remain private. This repository exposes only a portfolio-safe description of the platform.
-
-## More Documentation
-
-[Architecture notes](./docs/ARCHITECTURE.md)
+The implementation contains device/environment configuration, integration contracts and product code that should not be exposed through a public portfolio.
 
 ---
 
-**Private source repository · Public smart-agriculture case study**
+### What this project demonstrates
+
+**IoT architecture · edge resilience · smart agriculture · ML-assisted decisions · backend/mobile integration · offline-first thinking**
